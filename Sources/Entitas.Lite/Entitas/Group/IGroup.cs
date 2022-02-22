@@ -1,33 +1,44 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Entitas {
 
-    public delegate void GroupChanged(IGroup group, Entity entity, int index, IComponent component);
-    public delegate void GroupUpdated(IGroup group, Entity entity, int index, IComponent previousComponent, IComponent newComponent);
+    public delegate void GroupChanged<TEntity>(
+        IGroup<TEntity> group, TEntity entity, int index, IComponent component
+    ) where TEntity : class, IEntity;
 
-    public interface IGroup : IEnumerable<Entity> {
+    public delegate void GroupUpdated<TEntity>(
+        IGroup<TEntity> group, TEntity entity, int index,
+        IComponent previousComponent, IComponent newComponent
+    ) where TEntity : class, IEntity;
+
+    public interface IGroup {
 
         int count { get; }
 
         void RemoveAllEventHandlers();
+    }
 
-		event GroupChanged OnEntityAdded;
-		event GroupChanged OnEntityRemoved;
-		event GroupUpdated OnEntityUpdated;
+    public interface IGroup<TEntity> : IGroup where TEntity : class, IEntity {
 
-		IMatcher matcher { get; }
+        event GroupChanged<TEntity> OnEntityAdded;
+        event GroupChanged<TEntity> OnEntityRemoved;
+        event GroupUpdated<TEntity> OnEntityUpdated;
 
-		void HandleEntitySilently(Entity entity);
-		void HandleEntity(Entity entity, int index, IComponent component);
+        IMatcher<TEntity> matcher { get; }
 
-		GroupChanged HandleEntity(Entity entity);
+        void HandleEntitySilently(TEntity entity);
+        void HandleEntity(TEntity entity, int index, IComponent component);
+        GroupChanged<TEntity> HandleEntity(TEntity entity);
 
-		void UpdateEntity(Entity entity, int index, IComponent previousComponent, IComponent newComponent);
+        void UpdateEntity(TEntity entity, int index, IComponent previousComponent, IComponent newComponent);
 
-		bool ContainsEntity(Entity entity);
+        bool ContainsEntity(TEntity entity);
 
-		Entity[] GetEntities();
-		Entity GetSingleEntity();
-	}
+        TEntity[] GetEntities();
+        List<TEntity> GetEntities(List<TEntity> buffer);
+        TEntity GetSingleEntity();
+
+        IEnumerable<TEntity> AsEnumerable();
+        HashSet<TEntity>.Enumerator GetEnumerator();
+    }
 }

@@ -3,27 +3,27 @@ using System.Collections.Generic;
 
 namespace Entitas {
 
-    public class PrimaryEntityIndex<TKey> : AbstractEntityIndex<TKey> {
+    public class PrimaryEntityIndex<TEntity, TKey> : AbstractEntityIndex<TEntity, TKey> where TEntity : class, IEntity {
 
-        readonly Dictionary<TKey, Entity> _index;
+        readonly Dictionary<TKey, TEntity> _index;
 
-        public PrimaryEntityIndex(string name, IGroup group, Func<Entity, IComponent, TKey> getKey) : base(name, group, getKey) {
-            _index = new Dictionary<TKey, Entity>();
+        public PrimaryEntityIndex(string name, IGroup<TEntity> group, Func<TEntity, IComponent, TKey> getKey) : base(name, group, getKey) {
+            _index = new Dictionary<TKey, TEntity>();
             Activate();
         }
 
-        public PrimaryEntityIndex(string name, IGroup group, Func<Entity, IComponent, TKey[]> getKeys) : base(name, group, getKeys) {
-            _index = new Dictionary<TKey, Entity>();
+        public PrimaryEntityIndex(string name, IGroup<TEntity> group, Func<TEntity, IComponent, TKey[]> getKeys) : base(name, group, getKeys) {
+            _index = new Dictionary<TKey, TEntity>();
             Activate();
         }
 
-        public PrimaryEntityIndex(string name, IGroup group, Func<Entity, IComponent, TKey> getKey, IEqualityComparer<TKey> comparer) : base(name, group, getKey) {
-            _index = new Dictionary<TKey, Entity>(comparer);
+        public PrimaryEntityIndex(string name, IGroup<TEntity> group, Func<TEntity, IComponent, TKey> getKey, IEqualityComparer<TKey> comparer) : base(name, group, getKey) {
+            _index = new Dictionary<TKey, TEntity>(comparer);
             Activate();
         }
 
-        public PrimaryEntityIndex(string name, IGroup group, Func<Entity, IComponent, TKey[]> getKeys, IEqualityComparer<TKey> comparer) : base(name, group, getKeys) {
-            _index = new Dictionary<TKey, Entity>(comparer);
+        public PrimaryEntityIndex(string name, IGroup<TEntity> group, Func<TEntity, IComponent, TKey[]> getKeys, IEqualityComparer<TKey> comparer) : base(name, group, getKeys) {
+            _index = new Dictionary<TKey, TEntity>(comparer);
             Activate();
         }
 
@@ -32,8 +32,8 @@ namespace Entitas {
             indexEntities(_group);
         }
 
-        public Entity GetEntity(TKey key) {
-            Entity entity;
+        public TEntity GetEntity(TKey key) {
+            TEntity entity;
             _index.TryGetValue(key, out entity);
             return entity;
         }
@@ -57,7 +57,7 @@ namespace Entitas {
             _index.Clear();
         }
 
-        protected override void addEntity(TKey key, Entity entity) {
+        protected override void addEntity(TKey key, TEntity entity) {
             if (_index.ContainsKey(key)) {
                 throw new EntityIndexException(
                     "Entity for key '" + key + "' already exists!",
@@ -76,7 +76,7 @@ namespace Entitas {
             }
         }
 
-        protected override void removeEntity(TKey key, Entity entity) {
+        protected override void removeEntity(TKey key, TEntity entity) {
             _index.Remove(key);
 
             var safeAerc = entity.aerc as SafeAERC;

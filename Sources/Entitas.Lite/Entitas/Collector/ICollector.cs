@@ -6,12 +6,15 @@ namespace Entitas {
 
         int count { get; }
 
-		void Activate();
-		void Deactivate();
-		void ClearCollectedEntities();
+        void Activate();
+        void Deactivate();
+        void ClearCollectedEntities();
 
-        IEnumerable<Entity> GetCollectedEntities();
+        IEnumerable<TCast> GetCollectedEntities<TCast>() where TCast : class, IEntity;
+    }
 
-		HashSet<Entity> collectedEntities { get; }
-	}
+    public interface ICollector<TEntity> : ICollector where TEntity : class, IEntity {
+
+        HashSet<TEntity> collectedEntities { get; }
+    }
 }

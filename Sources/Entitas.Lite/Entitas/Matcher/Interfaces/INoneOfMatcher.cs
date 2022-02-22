@@ -1,5 +1,5 @@
 ﻿namespace Entitas {
 
-    public interface INoneOfMatcher : ICompoundMatcher {
+    public interface INoneOfMatcher<TEntity> : ICompoundMatcher<TEntity> where TEntity : class, IEntity {
     }
 }

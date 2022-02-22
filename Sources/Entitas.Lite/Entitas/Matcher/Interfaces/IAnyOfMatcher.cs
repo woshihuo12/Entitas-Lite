@@ -1,8 +1,8 @@
 ﻿namespace Entitas {
 
-    public interface IAnyOfMatcher : INoneOfMatcher {
+    public interface IAnyOfMatcher<TEntity> : INoneOfMatcher<TEntity> where TEntity : class, IEntity {
 
-        INoneOfMatcher NoneOf(params int[] indices);
-        INoneOfMatcher NoneOf(params IMatcher[] matchers);
+        INoneOfMatcher<TEntity> NoneOf(params int[] indices);
+        INoneOfMatcher<TEntity> NoneOf(params IMatcher<TEntity>[] matchers);
     }
 }
